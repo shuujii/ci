@@ -2,6 +2,14 @@
 
 shopt -s nullglob
 
+cat_file() {
+  echo "===================================================================="
+  echo "[$1]"
+  echo "---"
+  cat $1
+  echo "===================================================================="
+}
+
 PORT=8080
 COUNT=30
 LOG=httpd.log
@@ -18,17 +26,15 @@ while [ $i -le $COUNT ]; do
   sleep 5
   new_log_size=`wc -c < $LOG`
   if [ $((new_log_size-log_size)) -gt 100 ]; then
+    echo "### Crashed"
+    cat_file $LOG
     for f in {~,}/Library/Logs/DiagnosticReports/*ruby*; do
-      echo "===================================================================="
-      echo "[$f]"
-      echo "---"
-      cat $f
-      echo "===================================================================="
+      cat_file $f
     done
-    echo "Crashed ($i)"
     exit
   fi
   log_size=$new_log_size
   ((i++))
 done
-echo "No crashed"
+echo "### No crashed"
+cat_file $LOG
