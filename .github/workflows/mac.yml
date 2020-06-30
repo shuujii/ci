@@ -4,9 +4,8 @@ jobs:
   macOS-latest:
     runs-on: macos-latest
     steps:
+      - uses: actions/checkout@v2
       - name: run
         run: |
           ruby -v
-          pwd
-          ls -al $HOME
           ./run_test
