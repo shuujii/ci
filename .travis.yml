@@ -1,0 +1,6 @@
+jobs:
+  - os: osx
+
+script:
+  - ruby -v
+  - ./run_test

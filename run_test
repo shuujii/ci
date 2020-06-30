@@ -2,20 +2,21 @@
 
 shopt -s nullglob
 
-port=8080
-log=httpd.log
-ruby -run -e httpd . -p $port > $log 2>&1 &
-#ruby -run -e httpd > $log 2>&1 &
+PORT=8080
+COUNT=30
+LOG=httpd.log
+ruby -run -e httpd . -p $PORT > $LOG 2>&1 &
+#ruby -run -e httpd > $LOG 2>&1 &
 pid=$!
 trap "kill -9 $pid > /dev/null 2>&1" EXIT
 sleep 1
-log_size=`wc -c < $log`
+log_size=`wc -c < $LOG`
 i=1
-while [ $i -le 100 ]; do
+while [ $i -le $COUNT ]; do
   echo $i: log_size=$log_size
-  curl -s http://localhost:$port > response.log
+  curl -s http://localhost:$PORT > response.log
   sleep 5
-  new_log_size=`wc -c < $log`
+  new_log_size=`wc -c < $LOG`
   if [ $((new_log_size-log_size)) -gt 100 ]; then
     for f in {~,}/Library/Logs/DiagnosticReports/*ruby*; do
       echo "===================================================================="
