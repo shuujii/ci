@@ -1,0 +1,12 @@
+name: macOS
+on: [push]
+jobs:
+  macOS-latest:
+    runs-on: macos-latest
+    steps:
+      - name: run
+        run: |
+          ruby -v
+          pwd
+          ls -al $HOME
+          ./run_test

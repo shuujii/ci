@@ -1,0 +1,33 @@
+#!/bin/bash
+
+shopt -s nullglob
+
+port=8080
+log=httpd.log
+ruby -run -e httpd . -p $port > $log 2>&1 &
+#ruby -run -e httpd > $log 2>&1 &
+pid=$!
+trap "kill -9 $pid > /dev/null 2>&1" EXIT
+sleep 1
+log_size=`wc -c < $log`
+i=1
+while [ $i -le 100 ]; do
+  echo $i: log_size=$log_size
+  curl -s http://localhost:$port > response.log
+  sleep 5
+  new_log_size=`wc -c < $log`
+  if [ $((new_log_size-log_size)) -gt 100 ]; then
+    for f in {~,}/Library/Logs/DiagnosticReports/*ruby*; do
+      echo "===================================================================="
+      echo "[$f]"
+      echo "---"
+      cat $f
+      echo "===================================================================="
+    done
+    echo "Crashed ($i)"
+    exit
+  fi
+  log_size=$new_log_size
+  ((i++))
+done
+echo "No crashed"
